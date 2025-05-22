@@ -13,12 +13,27 @@
         "windows": [
             {
                 "title": "appswitcher",
-                "width": 800,
-                "height": 600
+                "width": 600,
+                "height": 300,
+                "alwaysOnTop": true,
+                "center": true,
+                "decorations": false,
+                "closable": false
             }
         ],
         "security": {
-            "csp": null
+            "csp": null,
+            "capabilities": [
+                {
+                    "identifier": "close perm",
+                    "windows": [
+                        "*"
+                    ],
+                    "permissions": [
+                        "core:window:allow-close"
+                    ]
+                } 
+            ]
         }
     },
     "bundle": {
