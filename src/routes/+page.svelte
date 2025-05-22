@@ -12,16 +12,29 @@
         apps = await invoke<string[]>("list_apps");
     });
 
-    function filteredApps() {
-        return apps
-            .filter((app) => app.toLowerCase().includes(appName.toLowerCase()))
-            .slice(0, 5);
+    function filteredApps(): string[] {
+        return apps.filter((app) =>
+            app.toLowerCase().includes(appName.toLowerCase()),
+        );
+    }
+
+    function visibleApps(): string[] {
+        const visibleCount = 5;
+        const start = Math.max(0, selectedIndex - Math.floor(visibleCount / 2));
+        return filteredApps().slice(start, start + visibleCount);
+    }
+
+    function visibleOffset(): number {
+        const visible = visibleApps();
+        const full = filteredApps();
+        return full.indexOf(visible[0]);
     }
 
     async function launchSelected(): Promise<void> {
-        const current = filteredApps()[selectedIndex];
-        if (current) {
-            await invoke("launch_app", { appName: current });
+        const full = filteredApps();
+        const selectedApp = full[selectedIndex];
+        if (selectedApp) {
+            await invoke("launch_app", { appName: selectedApp });
             await getCurrentWindow().close();
         }
     }
@@ -55,6 +68,11 @@
             case "Escape":
                 getCurrentWindow().close();
                 break;
+            default:
+                if (/^[a-zA-Z]$/.test(event.key)) {
+                    selectedIndex = 0;
+                }
+                break;
         }
     }
 </script>
@@ -69,8 +87,8 @@
 />
 
 <ul id="app_list">
-    {#each filteredApps() as app, i}
-        <li class:selected={i === selectedIndex}>
+    {#each visibleApps() as app, i}
+        <li class:selected={i + visibleOffset() === selectedIndex}>
             {app}
         </li>
     {/each}
