@@ -108,6 +108,8 @@
         color: #fab387;
         padding: 0 10px;
         font-family: "Hack", monospace;
+        outline: none;
+        box-shadow: none;
     }
 
     #app_name::placeholder {
