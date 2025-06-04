@@ -8,8 +8,21 @@
     let apps: string[] = $state([]);
     let selectedIndex: number = $state(0);
 
+    let colors: {
+        background: string;
+        border: string;
+        text: string;
+        selected_bg: string;
+        selected_text: string;
+    };
+
     onMount(async () => {
         apps = await invoke<string[]>("list_apps");
+
+        colors = await invoke("load_color_config");
+        for (const [key, value] of Object.entries(colors)) {
+            document.documentElement.style.setProperty(`--${key}`, value);
+        }
     });
 
     function filteredApps(): string[] {
@@ -102,10 +115,10 @@
         width: 94%;
         height: 30px;
         margin-top: 0%;
-        background-color: #1e1e2e;
-        border: 1px solid #fab387;
+        background-color: var(--background);
+        border: 1px solid var(--border);
         border-radius: 0.5em;
-        color: #fab387;
+        color: var(--text);
         padding: 0 10px;
         font-family: "Hack", monospace;
         outline: none;
@@ -113,7 +126,7 @@
     }
 
     #app_name::placeholder {
-        color: #fab387;
+        color: var(--text);
         opacity: 0.5;
     }
 
@@ -130,12 +143,12 @@
     }
 
     #app_list li {
-        background-color: #1e1e2e;
-        border: 1px solid #fab387;
+        background-color: var(--background);
+        border: 1px solid var(--border);
         border-radius: 0.5em;
         margin-top: 0.77em;
         padding: 8px 10px;
-        color: #fab387;
+        color: var(--text);
         font-family: "Hack", monospace;
         transition:
             background-color 0.2s ease,
@@ -144,7 +157,7 @@
     }
 
     #app_list li.selected {
-        background-color: #fab387;
-        color: #1e1e2e;
+        background-color: var(--selected_bg);
+        color: var(--selected_text);
     }
 </style>

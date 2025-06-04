@@ -2,6 +2,28 @@ use std::process::Command;
 use std::fs;
 use std::path::PathBuf;
 use std::path::Path;
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct ColorConfig {
+    pub background: String,
+    pub border: String,
+    pub text: String,
+    pub selected_bg: String,
+    pub selected_text: String,
+}
+
+impl Default for ColorConfig {
+    fn default() -> Self {
+        Self {
+            background: "#1e1e2e".to_string(),
+            border: "#fab387".to_string(),
+            text: "#fab387".to_string(),
+            selected_bg: "#fab387".to_string(),
+            selected_text: "#1e1e2e".to_string(),
+        }
+    }
+}
 
 #[tauri::command]
 fn list_apps() -> Vec<String> {
@@ -55,11 +77,28 @@ fn launch_app(app_name: String) -> Result<String, String> {
     Err(format!("App '{}' not found in standard locations", app_name))
 }
 
+#[tauri::command]
+fn load_color_config() -> ColorConfig {
+    let home_dir = match std::env::var("HOME") {
+        Ok(home) => home,
+        Err(_) => return ColorConfig::default(),
+    };
+
+    let mut config_path = PathBuf::from(home_dir);
+    config_path.push(".config/mofi/colors.toml");
+
+    if let Ok(contents) = fs::read_to_string(&config_path) {
+        toml::from_str::<ColorConfig>(&contents).unwrap_or_else(|_| ColorConfig::default())
+    } else {
+        ColorConfig::default()
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![launch_app, list_apps])
+        .invoke_handler(tauri::generate_handler![launch_app, list_apps, load_color_config])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

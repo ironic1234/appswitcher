@@ -41,8 +41,19 @@ npm run tauri dev
 npm run tauri build
 ```
 
+### Configuration
+
+Colors defined in .config/mofi/colors.toml, default:
+
+```toml
+background = "#1e1e2e"
+border = "#fab387"
+text = "#fab387"
+selected_bg = "#fab387"
+selected_text = "#1e1e2e"
+```
+
 ### Coming (Hopefully)
-- Pure Rust
 - Support for other system apps (Mostly finder)
 - Other features (translations, calculator, maybe files)
-- Customization (colors, not sure how to do with tauri but with pure rust should be doable)
+- Customization (other than color, like UI style)
